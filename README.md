@@ -17,7 +17,7 @@ AudioKit is an audio synthesis, processing, and analysis platform for iOS, macOS
 
 ### In Xcode 13:
 
-You can AudioKit and any of the other AudioKit libraries using Collections
+You can add AudioKit and any of the other AudioKit libraries using Collections
 
 1. Select File -> Add Packages...
 2. Click the `+` icon on the bottom left of the Collections sidebar on the left.
