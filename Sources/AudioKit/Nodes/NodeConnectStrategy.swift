@@ -27,9 +27,7 @@ extension Node {
 private extension Node {
 
     func makeAVConnectionsOptimised() {
-        guard let engine = avAudioNode.engine else {
-            fatalError("\(self) not attached to engine")
-        }
+        guard let engine = avAudioNode.engine else { return }
         var connections: [AVAudioNode: ([AVAudioConnectionPoint], AVAudioFormat)] = [:]
         makeOptimised(connectionsToMake: &connections)
 
