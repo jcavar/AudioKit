@@ -64,6 +64,8 @@ public class AudioEngine {
 
     /// Main mixer at the end of the signal chain
     public private(set) var mainMixerNode: Mixer?
+    /// Connection strategy to use when connecting nodes to main mixer
+    public var mainMixerConnectionStrategy: NodeConnectStrategy = .recursive
 
     /// Input node mixer
     public class InputNode: Mixer {
@@ -128,8 +130,7 @@ public class AudioEngine {
 
                 // create the on demand mixer if needed
                 createEngineMixer()
-                mainMixerNode?.addInput(node)
-                mainMixerNode?.makeAVConnections()
+                mainMixerNode?.addInput(node, strategy: mainMixerConnectionStrategy)
             }
 
             if wasRunning { try? start() }

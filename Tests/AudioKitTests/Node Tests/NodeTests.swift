@@ -280,6 +280,20 @@ class NodeTests: XCTestCase {
         audio.append(engine.render(duration: 0.1))
         XCTAssert(audio.isSilent)
     }
+
+    func testMatrixMixerInMixerDoesntCrash() {
+        let engine = AudioEngine()
+        engine.mainMixerConnectionStrategy = .optimised
+        let input = MIDISampler()
+        let reverb = Reverb(input)
+        let dryWet = MatrixMixer([Reverb(reverb), reverb])
+
+        let mix = Mixer(input, dryWet)
+        engine.output = mix
+
+        XCTAssertFalse(engine.avEngine.description.contains("other nodes"))
+        mix.removeAllInputs()
+     }
     
     func testManyMixerConnections() {
         let engine = AudioEngine()
