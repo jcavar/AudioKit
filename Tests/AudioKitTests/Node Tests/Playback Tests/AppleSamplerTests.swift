@@ -7,12 +7,13 @@ import AVFoundation
 // Commented out these tests due to intermittent failure on CI
 
 class AppleSamplerTests: XCTestCase {
+    var audioFile: AVAudioFile!
     let sampler = AppleSampler()
     let engine = AudioEngine()
 
     override func setUpWithError() throws {
         let sampleURL = Bundle.module.url(forResource: "TestResources/sinechirp", withExtension: "wav")!
-        let audioFile = try AVAudioFile(forReading: sampleURL)
+        audioFile = try AVAudioFile(forReading: sampleURL)
         try sampler.loadAudioFile(audioFile)
         engine.output = sampler
     }
@@ -22,6 +23,28 @@ class AppleSamplerTests: XCTestCase {
         sampler.play(noteNumber: 50, velocity: 127, channel: 1)
         audio.append(engine.render(duration: 2.0))
         testMD5(audio)
+    }
+
+    @available(iOS 13.0, *)
+    func testSamplerNotCleanedWhenStillConnected() throws {
+        func assertSamplerNotCleanedUp() {
+            // When sampler gets cleaned up, it gets the default preset with sine wave
+            let fileReferences = sampler.internalAU?.fullState?["file-references"] as? NSDictionary
+            XCTAssertEqual(fileReferences?.count, 1)
+        }
+        let engine = AudioEngine()
+        let sampler = AppleSampler()
+        try sampler.loadAudioFile(audioFile)
+        assertSamplerNotCleanedUp()
+
+        let input = Reverb(sampler)
+        let mixer = Mixer(sampler, input)
+        engine.output = mixer
+        _ = engine.startTest(totalDuration: 2.0)
+
+        mixer.removeInput(input, strategy: .disconnect)
+
+        assertSamplerNotCleanedUp()
     }
 
     func testStop() {

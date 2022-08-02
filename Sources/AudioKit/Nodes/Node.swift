@@ -103,21 +103,20 @@ public extension Node {
 
 extension Node {
 
-    func disconnectAndDetachIfLast(input: Node) {
-        if let engine = avAudioNode.engine {
-            let points = engine.outputConnectionPoints(for: input.avAudioNode, outputBus: 0)
-            let otherConnections = points.filter { $0.node != self.avAudioNode }
-            if otherConnections.isEmpty {
-                // It is important to go depth first search.
-                // If we first detach the current node,
-                // upstream nodes will lose the connection to the engine.
-                for connection in input.connections {
-                    input.disconnectAndDetachIfLast(input: connection)
-                }
-                engine.detach(input.avAudioNode)
-            } else {
-                avAudioNode.disconnect(input: input.avAudioNode, format: input.outputFormat)
+    func disconnectAndDetachIfLast(input: Node, strategy: DisconnectStrategy = .reconnect) {
+        guard let engine = avAudioNode.engine else { return }
+        let points = engine.outputConnectionPoints(for: input.avAudioNode, outputBus: 0)
+        let otherConnections = points.filter { $0.node != self.avAudioNode }
+        if otherConnections.isEmpty {
+            // It is important to go depth first search.
+            // If we first detach the current node,
+            // upstream nodes will lose the connection to the engine.
+            for connection in input.connections {
+                input.disconnectAndDetachIfLast(input: connection, strategy: strategy)
             }
+            engine.detach(input.avAudioNode)
+        } else {
+            avAudioNode.disconnect(input: input.avAudioNode, format: input.outputFormat, strategy: strategy)
         }
     }
 
