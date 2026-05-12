@@ -60,6 +60,7 @@ class RawDataTapTests: XCTestCase {
         // the background Task.
         wait(for: [dataExpectation], timeout: 0)
 
+        engine.stop()
     }
 
 }
