@@ -7,10 +7,15 @@ import GameplayKit
 import XCTest
 
 class PlaygroundOscillatorTests: XCTestCase {
-    let engine = AudioEngine()
+    var engine: AudioEngine!
 
     override func setUp() {
+        #if Swift6
+        AudioEngine.defaultAudioFormat = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2) ?? AudioEngine.defaultAudioFormat
+        #else
         Settings.sampleRate = 44100
+        #endif
+        engine = AudioEngine()
     }
 
     func testSine() {

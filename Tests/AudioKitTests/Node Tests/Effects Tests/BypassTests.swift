@@ -7,11 +7,17 @@ import AVFAudio
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
 class BypassTests: XCTestCase {
     let duration = 0.1
-    let source = ConstantGenerator(constant: 1)
+    var source: ConstantGenerator!
     var effects: [Node]!
 
     override func setUp() {
         super.setUp()
+        #if Swift6
+        AudioEngine.defaultAudioFormat = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2) ?? AudioEngine.defaultAudioFormat
+        #else
+        Settings.sampleRate = 44100
+        #endif
+        source = ConstantGenerator(constant: 1)
         effects = [
             Decimator(source),
             Distortion(source),

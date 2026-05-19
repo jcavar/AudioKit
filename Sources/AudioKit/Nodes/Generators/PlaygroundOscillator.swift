@@ -12,7 +12,12 @@ public class PlaygroundOscillator: NamedNode {
         let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)
 
         if self.isStarted {
-            let phaseIncrement = (twoPi / Float(Settings.sampleRate)) * self.frequency
+            #if Swift6
+            let sampleRate = self.outputFormat.sampleRate
+            #else
+            let sampleRate = Settings.sampleRate
+            #endif
+            let phaseIncrement = (twoPi / Float(sampleRate)) * self.frequency
             for frame in 0 ..< Int(frameCount) {
                 // Get signal value for this frame at time.
                 let index = Int(self.currentPhase / twoPi * Float(self.waveform!.count))
@@ -47,6 +52,10 @@ public class PlaygroundOscillator: NamedNode {
 
     public var name = "PlaygroundOscillator"
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     private var currentPhase: Float = 0
 
     fileprivate var waveform: Table?
@@ -69,4 +78,15 @@ public class PlaygroundOscillator: NamedNode {
 
         stop()
     }
+
+    #if Swift6
+    /// Initialize the oscillator with an explicit downstream format.
+    public convenience init(waveform: Table = Table(.sine),
+                            frequency: AUValue = 440,
+                            amplitude: AUValue = 1,
+                            outputFormat: AVAudioFormat) {
+        self.init(waveform: waveform, frequency: frequency, amplitude: amplitude)
+        self.outputFormat = outputFormat
+    }
+    #endif
 }

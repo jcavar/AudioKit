@@ -16,13 +16,28 @@ public class NewPitch: NamedNode {
     public var avAudioNode: AVAudioNode { pitchUnit }
     public var name = "NewPitch"
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     /// Initialize the time pitch node
     ///
     /// - Parameters:
     ///   - input: Input node to process
     public init(_ input: Node) {
         self.input = input
+        #if Swift6
+        self.outputFormat = input.outputFormat
+        #endif
     }
+
+    #if Swift6
+    /// Initialize the time pitch node with an explicit downstream format.
+    public convenience init(_ input: Node, outputFormat: AVAudioFormat) {
+        self.init(input)
+        self.outputFormat = outputFormat
+    }
+    #endif
 
     /// Pitch (Cents) ranges from -2400 to 2400 (Default: 0.0)
     /// NOTE: Base value of pitch is 1.0.

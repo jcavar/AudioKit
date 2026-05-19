@@ -15,6 +15,10 @@ public class Delay: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { return delayAU }
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     public var name = "Delay"
 
     /// Specification details for dry wet mix
@@ -86,6 +90,9 @@ public class Delay: NamedNode {
         dryWetMix: AUValue = dryWetMixDef.defaultValue
     ) {
         self.input = input
+        #if Swift6
+        self.outputFormat = input.outputFormat
+        #endif
 
         associateParams(with: delayAU)
 
@@ -94,4 +101,19 @@ public class Delay: NamedNode {
         self.feedback = feedback
         self.lowPassCutoff = lowPassCutoff
     }
+
+    #if Swift6
+    /// Initialize the delay node with an explicit downstream format.
+    public convenience init(
+        _ input: Node,
+        time: AUValue = timeDef.defaultValue,
+        feedback: AUValue = feedbackDef.defaultValue,
+        lowPassCutoff: AUValue = lowPassCutoffDef.defaultValue,
+        dryWetMix: AUValue = dryWetMixDef.defaultValue,
+        outputFormat: AVAudioFormat
+    ) {
+        self.init(input, time: time, feedback: feedback, lowPassCutoff: lowPassCutoff, dryWetMix: dryWetMix)
+        self.outputFormat = outputFormat
+    }
+    #endif
 }

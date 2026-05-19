@@ -418,10 +418,56 @@ public extension DSPSplitComplex {
 }
 
 public extension AVAudioTime {
+    #if Swift6
+    /// Returns an AVAudioTime set to sampleTime of zero at the default sample rate
+    static func sampleTimeZero(sampleRate: Double = AudioEngine.defaultAudioFormat.sampleRate) -> AVAudioTime {
+        let sampleTime = AVAudioFramePosition(Double(0))
+        return AVAudioTime(sampleTime: sampleTime, atRate: sampleRate)
+    }
+    #else
     /// Returns an AVAudioTime set to sampleTime of zero at the default sample rate
     static func sampleTimeZero(sampleRate: Double = Settings.sampleRate) -> AVAudioTime {
         let sampleTime = AVAudioFramePosition(Double(0))
         return AVAudioTime(sampleTime: sampleTime, atRate: sampleRate)
+    }
+    #endif
+}
+
+/// Default audio format used by AudioKit when no other format is specified.
+/// Same value used by `Settings.defaultAudioFormat` (non-Swift6 trait) and
+/// `AudioEngine.defaultAudioFormat`'s initial value.
+internal func makeDefaultAudioFormat() -> AVAudioFormat {
+    if #available(iOS 18.0, *) {
+        if !ProcessInfo.processInfo.isMacCatalystApp && !ProcessInfo.processInfo.isiOSAppOnMac {
+            return AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 2) ?? AVAudioFormat()
+        }
+    }
+    return AVAudioFormat(standardFormatWithSampleRate: 44_100, channels: 2) ?? AVAudioFormat()
+}
+
+/// Trait-aware default audio format. Resolves to `AudioEngine.defaultAudioFormat`
+/// under the Swift6 trait, or `Settings.audioFormat` otherwise.
+internal var currentDefaultAudioFormat: AVAudioFormat {
+    #if Swift6
+    return AudioEngine.defaultAudioFormat
+    #else
+    return Settings.audioFormat
+    #endif
+}
+
+/// Trait-aware default sample rate. Mirrors `currentDefaultAudioFormat.sampleRate`.
+internal var currentDefaultSampleRate: Double {
+    #if Swift6
+    return AudioEngine.defaultAudioFormat.sampleRate
+    #else
+    return Settings.sampleRate
+    #endif
+}
+
+public extension AVAudioFormat {
+    /// Mono version of this format at the same sample rate. Falls back to `self` if construction fails.
+    static func mono(matching format: AVAudioFormat) -> AVAudioFormat {
+        AVAudioFormat(standardFormatWithSampleRate: format.sampleRate, channels: 1) ?? format
     }
 }
 

@@ -16,6 +16,10 @@ public class Compressor: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     public var name = "Compressor"
 
     /// Specification details for threshold
@@ -116,6 +120,9 @@ public class Compressor: NamedNode {
         masterGain: AUValue = masterGainDef.defaultValue
     ) {
         self.input = input
+        #if Swift6
+        self.outputFormat = input.outputFormat
+        #endif
 
         associateParams(with: effectAU)
 
@@ -125,4 +132,25 @@ public class Compressor: NamedNode {
         self.releaseTime = releaseTime
         self.masterGain = masterGain
     }
+
+    #if Swift6
+    /// Initialize the compressor node with an explicit downstream format.
+    public convenience init(
+        _ input: Node,
+        threshold: AUValue = thresholdDef.defaultValue,
+        headRoom: AUValue = headRoomDef.defaultValue,
+        attackTime: AUValue = attackTimeDef.defaultValue,
+        releaseTime: AUValue = releaseTimeDef.defaultValue,
+        masterGain: AUValue = masterGainDef.defaultValue,
+        outputFormat: AVAudioFormat
+    ) {
+        self.init(input,
+                  threshold: threshold,
+                  headRoom: headRoom,
+                  attackTime: attackTime,
+                  releaseTime: releaseTime,
+                  masterGain: masterGain)
+        self.outputFormat = outputFormat
+    }
+    #endif
 }

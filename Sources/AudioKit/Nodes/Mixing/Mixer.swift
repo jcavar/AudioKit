@@ -16,7 +16,7 @@ public class Mixer: Node, NamedNode {
     public var avAudioNode: AVAudioNode
 
     /// Output format to be used when making connections from this node
-    public var outputFormat = Settings.audioFormat
+    public var outputFormat: AVAudioFormat = currentDefaultAudioFormat
 
     /// Name of the node
     open var name = "Mixer"
@@ -79,7 +79,7 @@ public class Mixer: Node, NamedNode {
         }
 
         // if this mixer is empty, must initialize
-        let mixerReset = mixerAU.engine?.initializeMixer(mixerAU)
+        let mixerReset = mixerAU.engine?.initializeMixer(mixerAU, format: outputFormat)
 
         inputs.append(node)
 

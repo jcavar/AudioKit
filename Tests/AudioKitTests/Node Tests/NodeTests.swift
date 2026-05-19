@@ -6,7 +6,11 @@ import XCTest
 class NodeTests: XCTestCase {
 
     override func setUp() {
+        #if Swift6
+        AudioEngine.defaultAudioFormat = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2) ?? AudioEngine.defaultAudioFormat
+        #else
         Settings.sampleRate = 44100
+        #endif
     }
 
     func testNodeBasic() {
@@ -43,7 +47,11 @@ class NodeTests: XCTestCase {
         engine.output = verb
 
         XCTAssertEqual(engine.mainMixerNode!.avAudioNode.inputFormat(forBus: 0), outputFormat)
+        #if Swift6
+        XCTAssertEqual(verb.avAudioNode.inputFormat(forBus: 0), AudioEngine.defaultAudioFormat)
+        #else
         XCTAssertEqual(verb.avAudioNode.inputFormat(forBus: 0), Settings.audioFormat)
+        #endif
     }
     
     func testRedundantConnection() {
@@ -569,11 +577,20 @@ class NodeTests: XCTestCase {
     #if !os(tvOS)
     func testConnectionFormatAppliedWhenAddingNode() throws {
         let engine = AudioEngine()
+        #if Swift6
+        let previousFormat = AudioEngine.defaultAudioFormat
+
+        var settings = AudioEngine.defaultAudioFormat.settings
+        settings[AVSampleRateKey] = 48000
+        AudioEngine.defaultAudioFormat = AVAudioFormat(settings: settings)!
+        engine.audioFormat = AudioEngine.defaultAudioFormat
+        #else
         let previousFormat = Settings.audioFormat
 
         var settings = Settings.audioFormat.settings
         settings[AVSampleRateKey] = 48000
         Settings.audioFormat = AVAudioFormat(settings: settings)!
+        #endif
 
 		let mixer = Mixer(MIDISampler())
 		engine.output = mixer
@@ -585,7 +602,11 @@ class NodeTests: XCTestCase {
 
         XCTAssertEqual(sampler.avAudioNode.outputFormat(forBus: 0).sampleRate, 48000)
 
+        #if Swift6
+        AudioEngine.defaultAudioFormat = previousFormat
+        #else
         Settings.audioFormat = previousFormat
+        #endif
     }
     #endif
     

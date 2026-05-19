@@ -4,7 +4,11 @@ import XCTest
 
 class MultiSegmentPlayerTests: XCTestCase {
     override func setUp() {
+        #if Swift6
+        AudioEngine.defaultAudioFormat = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2) ?? AudioEngine.defaultAudioFormat
+        #else
         Settings.sampleRate = 44100
+        #endif
     }
 
     func testPlaySegment() {

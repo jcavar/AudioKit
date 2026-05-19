@@ -15,6 +15,10 @@ public class Reverb: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     public var name = "Reverb"
 
     // Hacking start, stop, play, and bypass to use dryWetMix because reverbAU's bypass results in no sound
@@ -61,7 +65,18 @@ public class Reverb: NamedNode {
         avAudioNode = reverbAU
 
         reverbAU.wetDryMix = dryWetMix * 100.0
+        #if Swift6
+        self.outputFormat = input.outputFormat
+        #endif
     }
+
+    #if Swift6
+    /// Initialize the reverb node with an explicit downstream format.
+    public convenience init(_ input: Node, dryWetMix: AUValue = 0.5, outputFormat: AVAudioFormat) {
+        self.init(input, dryWetMix: dryWetMix)
+        self.outputFormat = outputFormat
+    }
+    #endif
 
     /// Load an Apple Factory Preset
     public func loadFactoryPreset(_ preset: AVAudioUnitReverbPreset) {

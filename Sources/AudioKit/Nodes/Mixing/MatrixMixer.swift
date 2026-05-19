@@ -36,7 +36,7 @@ public class MatrixMixer: NamedNode {
     public var name = "MatrixMixer"
 
     /// Output format to be used when making connections from this node
-    public var outputFormat = Settings.audioFormat
+    public var outputFormat: AVAudioFormat = currentDefaultAudioFormat
 
     public let unit = instantiate(
         componentDescription:

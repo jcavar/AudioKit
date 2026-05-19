@@ -23,7 +23,9 @@ public protocol Node: AnyObject {
     var isStarted: Bool { get }
 
     /// Audio format to use when connecting this node.
-    /// Defaults to  [Settings.audioFormat](x-source-tag://SettingsAudioFormat)
+    /// Single-input nodes default to their input's outputFormat; mixers and
+    /// generators default to `AudioEngine.defaultAudioFormat`. Under the
+    /// non-Swift6 trait, this falls back to `Settings.audioFormat`.
     var outputFormat: AVAudioFormat { get }
 }
 
@@ -58,7 +60,9 @@ public extension Node {
     func stop() { bypassed = true }
     func play() { bypassed = false }
     func bypass() { bypassed = true }
+    #if !Swift6
     var outputFormat: AVAudioFormat { Settings.audioFormat }
+    #endif
 
     /// All parameters on the Node
     var parameters: [NodeParameter] {
@@ -165,7 +169,10 @@ extension Node {
                 // If avAudioNode isA AVAudioEnvironmentNode and a Mixer3D is connecting to it.
                 // Makes sure the Mixer3D -Connects> EnvironmentNode as Mono.  **THIS IS IMPORTANT!**
                 // This also ensure EnvironmentalNodes input connections are **only** Mixers3D, so you can adjust 3D Parameters
-                environmentNode.connectMixer3D(avAudioMixerNode, engine: engine, format: connection.outputFormat)
+                environmentNode.connectMixer3D(avAudioMixerNode,
+                                               engine: engine,
+                                               format: connection.outputFormat,
+                                               monoFormat: .mono(matching: outputFormat))
             } else {
                 avAudioNode.connect(input: connection.avAudioNode, bus: bus, engine: engine, format: connection.outputFormat)
             }

@@ -15,6 +15,10 @@ public class TimePitch: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     public var name = "TimePitch"
 
     /// Rate (rate) ranges from 0.03125 to 32.0 (Default: 1.0)
@@ -57,10 +61,27 @@ public class TimePitch: NamedNode {
         overlap: AUValue = 8.0
     ) {
         self.input = input
+        #if Swift6
+        self.outputFormat = input.outputFormat
+        #endif
         self.rate = rate
         self.pitch = pitch
         self.overlap = overlap
 
         avAudioNode = timePitchAU
     }
+
+    #if Swift6
+    /// Initialize the time pitch node with an explicit downstream format.
+    public convenience init(
+        _ input: Node,
+        rate: AUValue = 1.0,
+        pitch: AUValue = 0.0,
+        overlap: AUValue = 8.0,
+        outputFormat: AVAudioFormat
+    ) {
+        self.init(input, rate: rate, pitch: pitch, overlap: overlap)
+        self.outputFormat = outputFormat
+    }
+    #endif
 }

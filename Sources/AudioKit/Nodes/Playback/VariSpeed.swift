@@ -15,6 +15,10 @@ public class VariSpeed: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     public var name = "VariSpeed"
 
     /// Rate (rate) ranges form 0.25 to 4.0 (Default: 1.0)
@@ -40,11 +44,22 @@ public class VariSpeed: NamedNode {
     ///
     public init(_ input: Node, rate: AUValue = 1.0) {
         self.input = input
+        #if Swift6
+        self.outputFormat = input.outputFormat
+        #endif
         self.rate = rate
         lastKnownRate = rate
 
         avAudioNode = variSpeedAU
     }
+
+    #if Swift6
+    /// Initialize the varispeed node with an explicit downstream format.
+    public convenience init(_ input: Node, rate: AUValue = 1.0, outputFormat: AVAudioFormat) {
+        self.init(input, rate: rate)
+        self.outputFormat = outputFormat
+    }
+    #endif
 
     /// Function to start, play, or activate the node, all do the same thing
     public func start() {

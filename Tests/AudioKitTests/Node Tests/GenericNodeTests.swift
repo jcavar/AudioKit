@@ -100,7 +100,11 @@ class GenericNodeTests: XCTestCase {
     let waveforms = [Table(.square), Table(.triangle), Table(.sawtooth), Table(.square)]
 
     override func setUp() {
+        #if Swift6
+        AudioEngine.defaultAudioFormat = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2) ?? AudioEngine.defaultAudioFormat
+        #else
         Settings.sampleRate = 44100
+        #endif
     }
 
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)

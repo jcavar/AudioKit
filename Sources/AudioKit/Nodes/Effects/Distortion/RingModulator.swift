@@ -16,6 +16,10 @@ public class RingModulator: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
+    #if Swift6
+    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    #endif
+
     public var name = "RingModulator"
 
     /// Specification details for ringModFreq1
@@ -86,6 +90,9 @@ public class RingModulator: NamedNode {
         finalMix: AUValue = finalMixDef.defaultValue
     ) {
         self.input = input
+        #if Swift6
+        self.outputFormat = input.outputFormat
+        #endif
 
         associateParams(with: effectAU)
 
@@ -94,4 +101,23 @@ public class RingModulator: NamedNode {
         self.ringModBalance = ringModBalance
         self.finalMix = finalMix
     }
+
+    #if Swift6
+    /// Initialize the ring modulator node with an explicit downstream format.
+    public convenience init(
+        _ input: Node,
+        ringModFreq1: AUValue = ringModFreq1Def.defaultValue,
+        ringModFreq2: AUValue = ringModFreq2Def.defaultValue,
+        ringModBalance: AUValue = ringModBalanceDef.defaultValue,
+        finalMix: AUValue = finalMixDef.defaultValue,
+        outputFormat: AVAudioFormat
+    ) {
+        self.init(input,
+                  ringModFreq1: ringModFreq1,
+                  ringModFreq2: ringModFreq2,
+                  ringModBalance: ringModBalance,
+                  finalMix: finalMix)
+        self.outputFormat = outputFormat
+    }
+    #endif
 }

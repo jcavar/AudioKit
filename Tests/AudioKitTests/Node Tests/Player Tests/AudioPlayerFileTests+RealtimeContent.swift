@@ -480,9 +480,16 @@ extension AudioPlayerFileTests {
                                          audioFormat: AVAudioFormat,
                                          buffered: Bool = false)
     {
+        #if Swift6
+        AudioEngine.defaultAudioFormat = audioFormat
+        #else
         Settings.audioFormat = audioFormat
+        #endif
 
         let engine = AudioEngine()
+        #if Swift6
+        engine.audioFormat = audioFormat
+        #endif
         let player = AudioPlayer()
 
         player.isBuffered = buffered
