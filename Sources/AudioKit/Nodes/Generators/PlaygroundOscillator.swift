@@ -53,7 +53,7 @@ public class PlaygroundOscillator: NamedNode {
     public var name = "PlaygroundOscillator"
 
     #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    public var outputFormat: AVAudioFormat = .audioKitDefault
     #endif
 
     private var currentPhase: Float = 0
@@ -78,15 +78,4 @@ public class PlaygroundOscillator: NamedNode {
 
         stop()
     }
-
-    #if Swift6
-    /// Initialize the oscillator with an explicit downstream format.
-    public convenience init(waveform: Table = Table(.sine),
-                            frequency: AUValue = 440,
-                            amplitude: AUValue = 1,
-                            outputFormat: AVAudioFormat) {
-        self.init(waveform: waveform, frequency: frequency, amplitude: amplitude)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

@@ -16,10 +16,6 @@ public class BandPassFilter: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "BandPassFilter"
 
     /// Specification details for centerFrequency
@@ -60,26 +56,10 @@ public class BandPassFilter: NamedNode {
         bandwidth: AUValue = bandwidthDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
         self.centerFrequency = centerFrequency
         self.bandwidth = bandwidth
     }
-
-    #if Swift6
-    /// Initialize the band pass filter node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        centerFrequency: AUValue = centerFrequencyDef.defaultValue,
-        bandwidth: AUValue = bandwidthDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input, centerFrequency: centerFrequency, bandwidth: bandwidth)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

@@ -39,7 +39,11 @@ open class NodeRecorder: NSObject {
     private var bus: Int = 0
 
     /// Used for fixing recordings being truncated
-    private var recordBufferDuration: Double = 16384 / currentDefaultSampleRate
+    #if Swift6
+    private var recordBufferDuration: Double = 16384 / AVAudioFormat.audioKitDefault.sampleRate
+    #else
+    private var recordBufferDuration: Double = 16384 / Settings.sampleRate
+    #endif
 
     /// Buffer length used for the recording tap and chunking audioDataCallback deliveries
     private let bufferLength: AVAudioFrameCount
@@ -147,7 +151,7 @@ open class NodeRecorder: NSObject {
     ///   must already exist. Defaults to String containing a date with format `yyyy-MM-dd HH-mm-ss.SSSS`. A `.caf`
     ///   extension will be appended.
     ///   - format: Format to use for the file's settings. When nil, falls back to
-    ///     `Settings.audioFormat` (non-Swift6 trait) or `AudioEngine.defaultAudioFormat` (Swift6 trait).
+    ///     `Settings.audioFormat` (non-Swift6 trait) or `AVAudioFormat.audioKitDefault` (Swift6 trait).
     /// - Returns: The configured AVAudioFile
     public static func createAudioFile(fileDirectoryURL: URL = URL(fileURLWithPath: NSTemporaryDirectory()),
                                        filenameProvider: (() -> String)? = nil,
@@ -156,7 +160,7 @@ open class NodeRecorder: NSObject {
         let filename = filenameProvider() + ".caf"
         let url = fileDirectoryURL.appendingPathComponent(filename)
         #if Swift6
-        let fileFormat = format ?? AudioEngine.defaultAudioFormat
+        let fileFormat = format ?? .audioKitDefault
         #else
         let fileFormat = format ?? Settings.audioFormat
         #endif

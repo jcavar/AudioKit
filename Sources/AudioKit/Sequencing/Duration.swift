@@ -14,7 +14,7 @@ public struct Duration: CustomStringConvertible, Comparable {
 
     /// Samples per second
     #if Swift6
-    public var sampleRate: Double = AudioEngine.defaultAudioFormat.sampleRate
+    public var sampleRate: Double = AVAudioFormat.audioKitDefault.sampleRate
     #else
     public var sampleRate: Double = Settings.sampleRate
     #endif
@@ -65,7 +65,7 @@ public struct Duration: CustomStringConvertible, Comparable {
     ///   - sampleRate: Sample rate in samples per second
     ///
     #if Swift6
-    public init(samples: Int, sampleRate: Double = AudioEngine.defaultAudioFormat.sampleRate, tempo: BPM = 60) {
+    public init(samples: Int, sampleRate: Double = AVAudioFormat.audioKitDefault.sampleRate, tempo: BPM = 60) {
         beats = tempo * (Double(samples) / sampleRate) / Double(Duration.secondsPerMinute)
         self.sampleRate = sampleRate
         self.tempo = tempo
@@ -96,7 +96,7 @@ public struct Duration: CustomStringConvertible, Comparable {
     ///   - sampleRate: Samples per second
     ///
     #if Swift6
-    public init(seconds: Double, sampleRate: Double = AudioEngine.defaultAudioFormat.sampleRate, tempo: BPM = 60) {
+    public init(seconds: Double, sampleRate: Double = AVAudioFormat.audioKitDefault.sampleRate, tempo: BPM = 60) {
         self.sampleRate = sampleRate
         self.tempo = tempo
         beats = tempo * (seconds / Double(Duration.secondsPerMinute))

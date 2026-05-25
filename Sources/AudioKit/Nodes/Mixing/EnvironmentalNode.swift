@@ -49,7 +49,7 @@ public class EnvironmentalNode: Node, NamedNode {
     open var name = "EnvironmentalNode"
     #if Swift6
     /// Audio format to use when connecting this node downstream.
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    public var outputFormat: AVAudioFormat = .audioKitDefault
     #endif
     /// The listener’s position in the 3D environment.
     public var listenerPosition: AVAudio3DPoint {

@@ -16,10 +16,6 @@ public class Distortion: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "Distortion"
 
     /// Specification details for delay
@@ -270,9 +266,6 @@ public class Distortion: NamedNode {
         finalMix: AUValue = finalMixDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
@@ -293,39 +286,4 @@ public class Distortion: NamedNode {
         self.softClipGain = softClipGain
         self.finalMix = finalMix
     }
-
-    #if Swift6
-    /// Initialize the distortion node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        delay: AUValue = delayDef.defaultValue,
-        decay: AUValue = decayDef.defaultValue,
-        delayMix: AUValue = delayMixDef.defaultValue,
-        ringModFreq1: AUValue = ringModFreq1Def.defaultValue,
-        ringModFreq2: AUValue = ringModFreq2Def.defaultValue,
-        ringModBalance: AUValue = ringModBalanceDef.defaultValue,
-        ringModMix: AUValue = ringModMixDef.defaultValue,
-        decimation: AUValue = decimationDef.defaultValue,
-        rounding: AUValue = roundingDef.defaultValue,
-        decimationMix: AUValue = decimationMixDef.defaultValue,
-        linearTerm: AUValue = linearTermDef.defaultValue,
-        squaredTerm: AUValue = squaredTermDef.defaultValue,
-        cubicTerm: AUValue = cubicTermDef.defaultValue,
-        polynomialMix: AUValue = polynomialMixDef.defaultValue,
-        softClipGain: AUValue = softClipGainDef.defaultValue,
-        finalMix: AUValue = finalMixDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(
-            input,
-            delay: delay, decay: decay, delayMix: delayMix,
-            ringModFreq1: ringModFreq1, ringModFreq2: ringModFreq2,
-            ringModBalance: ringModBalance, ringModMix: ringModMix,
-            decimation: decimation, rounding: rounding, decimationMix: decimationMix,
-            linearTerm: linearTerm, squaredTerm: squaredTerm, cubicTerm: cubicTerm,
-            polynomialMix: polynomialMix, softClipGain: softClipGain, finalMix: finalMix
-        )
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

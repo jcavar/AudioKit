@@ -16,10 +16,6 @@ public class HighShelfFilter: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "HighShelfFilter"
 
     /// Specification details for cutOffFrequency
@@ -60,26 +56,10 @@ public class HighShelfFilter: NamedNode {
         gain: AUValue = gainDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
         self.cutOffFrequency = cutOffFrequency
         self.gain = gain
     }
-
-    #if Swift6
-    /// Initialize the high shelf filter node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        cutOffFrequency: AUValue = cutOffFrequencyDef.defaultValue,
-        gain: AUValue = gainDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input, cutOffFrequency: cutOffFrequency, gain: gain)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

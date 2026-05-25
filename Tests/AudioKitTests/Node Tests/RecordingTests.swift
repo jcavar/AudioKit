@@ -85,7 +85,7 @@ class RecordingTests: AudioFileTestCase {
 
     func getSettings() -> [String: Any] {
         #if Swift6
-        var settings = AudioEngine.defaultAudioFormat.settings
+        var settings = AVAudioFormat.audioKitDefault.settings
         #else
         var settings = Settings.audioFormat.settings
         #endif

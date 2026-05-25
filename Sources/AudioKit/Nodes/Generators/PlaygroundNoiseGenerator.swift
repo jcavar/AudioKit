@@ -40,7 +40,7 @@ public class PlaygroundNoiseGenerator: NamedNode {
     public var name = "PlaygroundNoiseGenerator"
 
     #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    public var outputFormat: AVAudioFormat = .audioKitDefault
     #endif
 
     /// Volume usually 0-1
@@ -54,12 +54,4 @@ public class PlaygroundNoiseGenerator: NamedNode {
 
         stop()
     }
-
-    #if Swift6
-    /// Initialize the noise generator with an explicit downstream format.
-    public convenience init(amplitude: AUValue = 1, outputFormat: AVAudioFormat) {
-        self.init(amplitude: amplitude)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

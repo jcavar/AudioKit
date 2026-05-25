@@ -7,12 +7,12 @@ class EngineTests: XCTestCase {
     // Changing Settings.audioFormat will change subsequent node connections
     // from 44_100 which the MD5's were created with so be sure to change it back at the end of a test
 
+    #if !Swift6
+    // Under Swift6, audio format is not a settable global — sources determine
+    // their own format and the engine queries the output device. These tests
+    // exercise the legacy `Settings.audioFormat` global which doesn't apply.
     func testEngineSampleRateGraphConsistency() {
-        #if Swift6
-        let previousFormat = AudioEngine.defaultAudioFormat
-        #else
         let previousFormat = Settings.audioFormat
-        #endif
 
         let newRate: Double = 48000
         guard let newAudioFormat = AVAudioFormat(standardFormatWithSampleRate: newRate,
@@ -21,14 +21,10 @@ class EngineTests: XCTestCase {
             return
         }
 
-        #if Swift6
-        AudioEngine.defaultAudioFormat = newAudioFormat
-        #else
         if newAudioFormat != Settings.audioFormat {
             Log("Changing audioFormat to", newAudioFormat)
             Settings.audioFormat = newAudioFormat
         }
-        #endif
 
         let engine = AudioEngine()
         let url = Bundle.module.url(forResource: "12345", withExtension: "wav", subdirectory: "TestResources")!
@@ -48,32 +44,17 @@ class EngineTests: XCTestCase {
         XCTAssertTrue(mainMixerNodeSampleRate == newRate,
                       "mainMixerNodeSampleRate is \(mixerSampleRate), requested rate was \(newRate)")
 
-        #if Swift6
-        // Under Swift6, AudioPlayer reports the file's processing format downstream;
-        // sample-rate conversion happens at the mixer connection. The test file is 44.1kHz.
-        XCTAssertTrue(inputSampleRate == input.outputFormat.sampleRate,
-                      "playerSampleRate is \(inputSampleRate), file format was \(input.outputFormat.sampleRate)")
-        #else
         XCTAssertTrue(inputSampleRate == newRate,
                       "oscSampleRate is \(inputSampleRate), requested rate was \(newRate)")
-        #endif
 
         Log(engine.avEngine.description)
 
         // restore
-        #if Swift6
-        AudioEngine.defaultAudioFormat = previousFormat
-        #else
         Settings.audioFormat = previousFormat
-        #endif
     }
 
     func testEngineSampleRateChanged() {
-        #if Swift6
-        let previousFormat = AudioEngine.defaultAudioFormat
-        #else
         let previousFormat = Settings.audioFormat
-        #endif
 
         guard let audioFormat441k = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2) else {
             XCTFail("Failed to create format at 44.1k")
@@ -84,14 +65,8 @@ class EngineTests: XCTestCase {
             return
         }
 
-        #if Swift6
-        AudioEngine.defaultAudioFormat = audioFormat441k
-        let engine = AudioEngine()
-        engine.audioFormat = audioFormat441k
-        #else
         Settings.audioFormat = audioFormat441k
         let engine = AudioEngine()
-        #endif
         let node1 = Mixer()
         engine.output = node1
 
@@ -105,12 +80,7 @@ class EngineTests: XCTestCase {
 
         Log("44100", engine.avEngine.description)
 
-        #if Swift6
-        AudioEngine.defaultAudioFormat = audioFormat48k
-        engine.audioFormat = audioFormat48k
-        #else
         Settings.audioFormat = audioFormat48k
-        #endif
         let node2 = Mixer()
         engine.output = node2
 
@@ -126,12 +96,9 @@ class EngineTests: XCTestCase {
 
         // restore
         Log("Restoring global sample rate to", previousFormat.sampleRate)
-        #if Swift6
-        AudioEngine.defaultAudioFormat = previousFormat
-        #else
         Settings.audioFormat = previousFormat
-        #endif
     }
+    #endif
 
     func testEngineMainMixerCreated() {
         let engine = AudioEngine()

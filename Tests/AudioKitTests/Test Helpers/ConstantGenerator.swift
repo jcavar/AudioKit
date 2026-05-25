@@ -9,7 +9,7 @@ public class ConstantGenerator: Node {
     public private(set) var avAudioNode: AVAudioNode
 
     #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    public var outputFormat: AVAudioFormat = .audioKitDefault
     #endif
 
     init(constant: Float) {

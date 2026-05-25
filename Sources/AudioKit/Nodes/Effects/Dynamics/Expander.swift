@@ -16,10 +16,6 @@ public class Expander: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "Expander"
 
     /// Specification details for expansionRatio
@@ -120,9 +116,6 @@ public class Expander: NamedNode {
         masterGain: AUValue = masterGainDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
@@ -132,25 +125,4 @@ public class Expander: NamedNode {
         self.releaseTime = releaseTime
         self.masterGain = masterGain
     }
-
-    #if Swift6
-    /// Initialize the expander node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        expansionRatio: AUValue = expansionRatioDef.defaultValue,
-        expansionThreshold: AUValue = expansionThresholdDef.defaultValue,
-        attackTime: AUValue = attackTimeDef.defaultValue,
-        releaseTime: AUValue = releaseTimeDef.defaultValue,
-        masterGain: AUValue = masterGainDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input,
-                  expansionRatio: expansionRatio,
-                  expansionThreshold: expansionThreshold,
-                  attackTime: attackTime,
-                  releaseTime: releaseTime,
-                  masterGain: masterGain)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

@@ -19,7 +19,7 @@ public class MultiSegmentAudioPlayer: NamedNode {
     public var name = "MultiSegmentAudioPlayer"
 
     #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    public var outputFormat: AVAudioFormat = .audioKitDefault
     #endif
 
     /// Just the playerNode's property, values above 1 will have gain applied
@@ -32,14 +32,7 @@ public class MultiSegmentAudioPlayer: NamedNode {
 
     public init() {}
 
-    #if Swift6
-    /// Initialize the multi-segment player with an explicit downstream format.
-    public convenience init(outputFormat: AVAudioFormat) {
-        self.init()
-        self.outputFormat = outputFormat
-    }
-    #endif
-    
+
     /// starts the player
     public func play() {
         playerNode.play()

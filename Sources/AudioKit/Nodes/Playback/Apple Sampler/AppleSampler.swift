@@ -45,7 +45,7 @@ open class AppleSampler: NamedNode {
     public var avAudioNode: AVAudioNode { samplerUnit }
 
     #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    public var outputFormat: AVAudioFormat = .audioKitDefault
     #endif
 
     /// Output Amplitude. Range: -90.0 -> +12 db, Default: 0 db
@@ -76,14 +76,6 @@ open class AppleSampler: NamedNode {
     public init() {
         internalAU = samplerUnit.auAudioUnit
     }
-
-    #if Swift6
-    /// Initialize the sampler with an explicit downstream format.
-    public convenience init(outputFormat: AVAudioFormat) {
-        self.init()
-        self.outputFormat = outputFormat
-    }
-    #endif
 
     // Add URL based initializers
 

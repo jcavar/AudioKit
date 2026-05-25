@@ -16,10 +16,6 @@ public class AppleDistortion: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "AppleDistortion"
 
     /// Dry/Wet Mix (Default 50)
@@ -46,9 +42,6 @@ public class AppleDistortion: NamedNode {
     public init(_ input: Node, dryWetMix: AUValue = 50,
                 preGain: AUValue = -6) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
         self.dryWetMix = dryWetMix
 
         avAudioNode = distAU
@@ -56,16 +49,6 @@ public class AppleDistortion: NamedNode {
         distAU.preGain = preGain
         distAU.wetDryMix = dryWetMix
     }
-
-    #if Swift6
-    /// Initialize the distortion node with an explicit downstream format.
-    public convenience init(_ input: Node, dryWetMix: AUValue = 50,
-                            preGain: AUValue = -6,
-                            outputFormat: AVAudioFormat) {
-        self.init(input, dryWetMix: dryWetMix, preGain: preGain)
-        self.outputFormat = outputFormat
-    }
-    #endif
 
     /// Load an Apple Factory Preset
     public func loadFactoryPreset(_ preset: AVAudioUnitDistortionPreset) {

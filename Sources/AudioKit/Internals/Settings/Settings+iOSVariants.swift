@@ -95,7 +95,11 @@
                 Log("Could not allow haptics: \(error)", log: OSLog.settings, type: .error)
             }
 
+            #if Swift6
+            try session.setPreferredIOBufferDuration(Double(bufferLength.samplesCount) / AVAudioFormat.audioKitDefault.sampleRate)
+            #else
             try session.setPreferredIOBufferDuration(bufferLength.duration)
+            #endif
             try session.setActive(true)
         }
 

@@ -16,7 +16,11 @@ public class Mixer: Node, NamedNode {
     public var avAudioNode: AVAudioNode
 
     /// Output format to be used when making connections from this node
-    public var outputFormat: AVAudioFormat = currentDefaultAudioFormat
+    #if Swift6
+    public var outputFormat: AVAudioFormat = .audioKitDefault
+    #else
+    public var outputFormat: AVAudioFormat = Settings.audioFormat
+    #endif
 
     /// Name of the node
     open var name = "Mixer"

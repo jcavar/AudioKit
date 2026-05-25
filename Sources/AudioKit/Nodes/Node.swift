@@ -23,9 +23,12 @@ public protocol Node: AnyObject {
     var isStarted: Bool { get }
 
     /// Audio format to use when connecting this node.
-    /// Single-input nodes default to their input's outputFormat; mixers and
-    /// generators default to `AudioEngine.defaultAudioFormat`. Under the
-    /// non-Swift6 trait, this falls back to `Settings.audioFormat`.
+    /// Under the Swift6 trait, single-input nodes inherit their input's
+    /// `outputFormat` automatically (via protocol extension). Generators and
+    /// mixers override this to provide their own format, falling back to
+    /// `AVAudioFormat.audioKitDefault` (44.1 kHz stereo) when nothing else
+    /// is available. Under the non-Swift6 trait, this falls back to
+    /// `Settings.audioFormat`.
     var outputFormat: AVAudioFormat { get }
 }
 
@@ -60,7 +63,11 @@ public extension Node {
     func stop() { bypassed = true }
     func play() { bypassed = false }
     func bypass() { bypassed = true }
-    #if !Swift6
+    #if Swift6
+    var outputFormat: AVAudioFormat {
+        connections.first?.outputFormat ?? .audioKitDefault
+    }
+    #else
     var outputFormat: AVAudioFormat { Settings.audioFormat }
     #endif
 

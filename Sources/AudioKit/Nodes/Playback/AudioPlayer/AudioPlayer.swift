@@ -22,9 +22,9 @@ public class AudioPlayer: NamedNode {
 
     #if Swift6
     /// Audio format used when connecting this node downstream. Reflects the
-    /// currently loaded file or buffer; falls back to `AudioEngine.defaultAudioFormat`
-    /// when neither is set.
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    /// currently loaded file or buffer; falls back to `AVAudioFormat.audioKitDefault`
+    /// (44.1 kHz stereo) when neither is set.
+    public var outputFormat: AVAudioFormat = .audioKitDefault
     #endif
 
     public var name = "AudioPlayer"
@@ -119,7 +119,7 @@ public class AudioPlayer: NamedNode {
             }
 
             #if Swift6
-            outputFormat = file?.processingFormat ?? buffer?.format ?? AudioEngine.defaultAudioFormat
+            outputFormat = file?.processingFormat ?? buffer?.format ?? .audioKitDefault
             #endif
 
             if wasPlaying { play() }
@@ -133,7 +133,7 @@ public class AudioPlayer: NamedNode {
             let wasPlaying = status == .playing
             if wasPlaying { stop() }
             #if Swift6
-            outputFormat = buffer?.format ?? file?.processingFormat ?? AudioEngine.defaultAudioFormat
+            outputFormat = buffer?.format ?? file?.processingFormat ?? .audioKitDefault
             #endif
             if wasPlaying { play() }
         }

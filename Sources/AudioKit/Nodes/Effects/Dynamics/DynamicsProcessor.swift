@@ -16,10 +16,6 @@ public class DynamicsProcessor: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "DynamicsProcessor"
 
     /// Specification details for threshold
@@ -150,9 +146,6 @@ public class DynamicsProcessor: NamedNode {
         masterGain: AUValue = masterGainDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
@@ -164,29 +157,4 @@ public class DynamicsProcessor: NamedNode {
         self.releaseTime = releaseTime
         self.masterGain = masterGain
     }
-
-    #if Swift6
-    /// Initialize the dynamics processor node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        threshold: AUValue = thresholdDef.defaultValue,
-        headRoom: AUValue = headRoomDef.defaultValue,
-        expansionRatio: AUValue = expansionRatioDef.defaultValue,
-        expansionThreshold: AUValue = expansionThresholdDef.defaultValue,
-        attackTime: AUValue = attackTimeDef.defaultValue,
-        releaseTime: AUValue = releaseTimeDef.defaultValue,
-        masterGain: AUValue = masterGainDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input,
-                  threshold: threshold,
-                  headRoom: headRoom,
-                  expansionRatio: expansionRatio,
-                  expansionThreshold: expansionThreshold,
-                  attackTime: attackTime,
-                  releaseTime: releaseTime,
-                  masterGain: masterGain)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

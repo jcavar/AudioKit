@@ -16,10 +16,6 @@ public class PeakLimiter: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "PeakLimiter"
 
     /// Specification details for attackTime
@@ -75,9 +71,6 @@ public class PeakLimiter: NamedNode {
         preGain: AUValue = preGainDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
@@ -85,18 +78,4 @@ public class PeakLimiter: NamedNode {
         self.decayTime = decayTime
         self.preGain = preGain
     }
-
-    #if Swift6
-    /// Initialize the peak limiter node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        attackTime: AUValue = attackTimeDef.defaultValue,
-        decayTime: AUValue = decayTimeDef.defaultValue,
-        preGain: AUValue = preGainDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input, attackTime: attackTime, decayTime: decayTime, preGain: preGain)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

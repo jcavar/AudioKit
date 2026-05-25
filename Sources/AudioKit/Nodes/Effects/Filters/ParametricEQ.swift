@@ -16,10 +16,6 @@ public class ParametricEQ: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "ParametricEQ"
 
     /// Specification details for centerFreq
@@ -75,9 +71,6 @@ public class ParametricEQ: NamedNode {
         gain: AUValue = gainDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
@@ -85,18 +78,4 @@ public class ParametricEQ: NamedNode {
         self.q = q
         self.gain = gain
     }
-
-    #if Swift6
-    /// Initialize the parametric eq node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        centerFreq: AUValue = centerFreqDef.defaultValue,
-        q: AUValue = qDef.defaultValue,
-        gain: AUValue = gainDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input, centerFreq: centerFreq, q: q, gain: gain)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

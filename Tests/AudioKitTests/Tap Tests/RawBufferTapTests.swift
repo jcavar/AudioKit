@@ -53,7 +53,7 @@ final class RawBufferTapTests: XCTestCase {
         wait(for: [durationExpectation], timeout: duration + 0.5)
 
         #if Swift6
-        let sampleRate = AudioEngine.defaultAudioFormat.sampleRate
+        let sampleRate = AVAudioFormat.audioKitDefault.sampleRate
         #else
         let sampleRate = Settings.sampleRate
         #endif

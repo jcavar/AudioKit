@@ -16,10 +16,6 @@ public class Decimator: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "Decimator"
 
     /// Specification details for decimation
@@ -75,9 +71,6 @@ public class Decimator: NamedNode {
         finalMix: AUValue = finalMixDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
@@ -97,18 +90,4 @@ public class Decimator: NamedNode {
         zero(kDistortionParam_RingModMix)
         zero(kDistortionParam_DelayMix)
     }
-
-    #if Swift6
-    /// Initialize the decimator node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        decimation: AUValue = decimationDef.defaultValue,
-        rounding: AUValue = roundingDef.defaultValue,
-        finalMix: AUValue = finalMixDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input, decimation: decimation, rounding: rounding, finalMix: finalMix)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }

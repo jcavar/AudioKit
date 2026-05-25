@@ -64,13 +64,14 @@ public class AudioEngine {
     public private(set) var mainMixerNode: Mixer?
 
     #if Swift6
-    /// Default audio format used by AudioKit when no other format is specified.
-    /// New nodes capture this value at construction time; changing it affects
-    /// subsequently-created nodes, not existing ones.
-    nonisolated(unsafe) public static var defaultAudioFormat: AVAudioFormat = makeDefaultAudioFormat()
-
-    /// Audio format used when making connections to the output
-    public var audioFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
+    /// Audio format used when connecting the engine's main mixer to the
+    /// hardware output. Resolves to a standard (Float32 deinterleaved) format
+    /// at the output device's current sample rate and channel count.
+    public var audioFormat: AVAudioFormat {
+        let deviceFormat = avEngine.outputNode.outputFormat(forBus: 0)
+        return AVAudioFormat(standardFormatWithSampleRate: deviceFormat.sampleRate,
+                             channels: deviceFormat.channelCount) ?? .audioKitDefault
+    }
     #else
     /// Output format to be used when making connections to the output
     public var outputAudioFormat: AVAudioFormat?
@@ -128,12 +129,12 @@ public class AudioEngine {
             if let node = output {
                 avEngine.attach(node.avAudioNode)
 
-                // has the sample rate changed?
+                // has the output device's format changed since we built the engine mixer?
                 if let currentSampleRate = mainMixerNode?.avAudioNode.outputFormat(forBus: 0).sampleRate,
                    let currentChannelCount = mainMixerNode?.avAudioNode.outputFormat(forBus: 0).channelCount,
                    (currentSampleRate != audioFormat.sampleRate || currentChannelCount != audioFormat.channelCount)
                 {
-                    Log("Sample Rate has changed, creating new mainMixerNode at", audioFormat.sampleRate)
+                    Log("Output device format has changed, recreating engine mixer at", audioFormat.sampleRate)
                     removeEngineMixer()
                 }
 
@@ -206,12 +207,17 @@ public class AudioEngine {
     /// - Parameter duration: Total duration of the entire test
     /// - Returns: A buffer which you can append to
     public func startTest(totalDuration duration: Double) -> AVAudioPCMBuffer {
-        let samples = Int(duration * audioFormat.sampleRate)
+        #if Swift6
+        let renderFormat = output?.outputFormat ?? .audioKitDefault
+        #else
+        let renderFormat = audioFormat
+        #endif
+        let samples = Int(duration * renderFormat.sampleRate)
 
         do {
             avEngine.reset()
             try avEngine.enableManualRenderingMode(.offline,
-                                                   format: audioFormat,
+                                                   format: renderFormat,
                                                    maximumFrameCount: maximumFrameCount)
             try start()
         } catch let err {
@@ -231,7 +237,7 @@ public class AudioEngine {
     /// - Parameter duration: Length of time to render for
     /// - Returns: Buffer of rendered audio
     public func render(duration: Double) -> AVAudioPCMBuffer {
-        let sampleCount = Int(duration * audioFormat.sampleRate)
+        let sampleCount = Int(duration * avEngine.manualRenderingFormat.sampleRate)
         let startSampleCount = Int(avEngine.manualRenderingSampleTime)
 
         let buffer = AVAudioPCMBuffer(

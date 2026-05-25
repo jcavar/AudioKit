@@ -17,7 +17,7 @@ class AVAudioPCMBufferTests: XCTestCase {
 
     func doTestM4A(url: URL) {
         #if Swift6
-        var settings = AudioEngine.defaultAudioFormat.settings
+        var settings = AVAudioFormat.audioKitDefault.settings
         #else
         var settings = Settings.audioFormat.settings
         #endif

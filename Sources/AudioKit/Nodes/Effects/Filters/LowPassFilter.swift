@@ -16,10 +16,6 @@ public class LowPassFilter: NamedNode {
     /// Underlying AVAudioNode
     public var avAudioNode: AVAudioNode { effectAU }
 
-    #if Swift6
-    public var outputFormat: AVAudioFormat = AudioEngine.defaultAudioFormat
-    #endif
-
     public var name = "LowPassFilter"
 
     /// Specification details for cutoffFrequency
@@ -60,26 +56,10 @@ public class LowPassFilter: NamedNode {
         resonance: AUValue = resonanceDef.defaultValue
     ) {
         self.input = input
-        #if Swift6
-        self.outputFormat = input.outputFormat
-        #endif
 
         associateParams(with: effectAU)
 
         self.cutoffFrequency = cutoffFrequency
         self.resonance = resonance
     }
-
-    #if Swift6
-    /// Initialize the low pass filter node with an explicit downstream format.
-    public convenience init(
-        _ input: Node,
-        cutoffFrequency: AUValue = cutoffFrequencyDef.defaultValue,
-        resonance: AUValue = resonanceDef.defaultValue,
-        outputFormat: AVAudioFormat
-    ) {
-        self.init(input, cutoffFrequency: cutoffFrequency, resonance: resonance)
-        self.outputFormat = outputFormat
-    }
-    #endif
 }
