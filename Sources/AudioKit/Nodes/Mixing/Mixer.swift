@@ -87,14 +87,7 @@ public class Mixer: Node, NamedNode {
             mixerAU.engine?.detach(mixerReset)
         }
 
-        let connectionStrategy: ConnectStrategy
-        if mixerAU.engine?.isRunning == true {
-            connectionStrategy = .incremental
-        } else {
-            connectionStrategy = strategy
-        }
-
-        switch connectionStrategy {
+        switch strategy {
         case .complete:
             makeAVConnections()
         case .incremental:
