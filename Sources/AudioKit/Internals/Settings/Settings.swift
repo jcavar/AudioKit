@@ -52,17 +52,8 @@ public class Settings: NSObject {
     }
 
     /// Default audio format
-    public static let defaultAudioFormat: AVAudioFormat = {
-        if #available(iOS 18.0, *) {
-            if !ProcessInfo.processInfo.isMacCatalystApp && !ProcessInfo.processInfo.isiOSAppOnMac {
-                /// Default AVAudioFormat for iOS 18 and newer (not on Mac)
-                return AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 2) ?? AVAudioFormat()
-            }
-        }
-
-        /// Fallback default
-        return AVAudioFormat(standardFormatWithSampleRate: 44_100, channels: 2) ?? AVAudioFormat()
-    }()
+    public static let defaultAudioFormat = AVAudioFormat(standardFormatWithSampleRate: 44_100,
+                                                        channels: 2) ?? AVAudioFormat()
 
     /// The sample rate in Hertz. Set a new audioFormat if you want to change this value.
     /// See audioFormat. This is the format that is used for node connections.
