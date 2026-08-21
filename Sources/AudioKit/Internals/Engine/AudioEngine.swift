@@ -63,16 +63,7 @@ public class AudioEngine {
     /// Main mixer at the end of the signal chain
     public private(set) var mainMixerNode: Mixer?
 
-    #if Swift6
-    /// Audio format used when connecting the engine's main mixer to the
-    /// hardware output. Resolves to a standard (Float32 deinterleaved) format
-    /// at the output device's current sample rate and channel count.
-    public var audioFormat: AVAudioFormat {
-        let deviceFormat = avEngine.outputNode.outputFormat(forBus: 0)
-        return AVAudioFormat(standardFormatWithSampleRate: deviceFormat.sampleRate,
-                             channels: deviceFormat.channelCount) ?? .audioKitDefault
-    }
-    #else
+    #if !Swift6
     /// Output format to be used when making connections to the output
     public var outputAudioFormat: AVAudioFormat?
     private var audioFormat: AVAudioFormat { outputAudioFormat ?? Settings.audioFormat }
@@ -130,16 +121,16 @@ public class AudioEngine {
                 avEngine.attach(node.avAudioNode)
 
                 // has the output device's format changed since we built the engine mixer?
-                if let currentSampleRate = mainMixerNode?.avAudioNode.outputFormat(forBus: 0).sampleRate,
-                   let currentChannelCount = mainMixerNode?.avAudioNode.outputFormat(forBus: 0).channelCount,
-                   (currentSampleRate != audioFormat.sampleRate || currentChannelCount != audioFormat.channelCount)
+                let outputFormat = avEngine.outputNode.outputFormat(forBus: 0)
+                if let currentFormat = mainMixerNode?.avAudioNode.outputFormat(forBus: 0),
+                   (currentFormat.sampleRate != outputFormat.sampleRate || currentFormat.channelCount != outputFormat.channelCount)
                 {
-                    Log("Output device format has changed, recreating engine mixer at", audioFormat.sampleRate)
+                    Log("Output device format has changed, recreating engine mixer at", outputFormat.sampleRate)
                     removeEngineMixer()
                 }
 
                 // create the on demand mixer if needed
-				createEngineMixer()
+				createEngineMixer(format: outputFormat)
                 mainMixerNode?.addInput(node)
                 mainMixerNode?.makeAVConnections()
             }
@@ -150,15 +141,15 @@ public class AudioEngine {
 
     // simulate the AVAudioEngine.mainMixerNode, but create it ourselves to ensure the
     // correct sample rate is used from the engine's audioFormat
-	private func createEngineMixer() {
+    private func createEngineMixer(format: AVAudioFormat) {
 		guard mainMixerNode == nil else { return }
 
 		let mixer = Mixer(name: "AudioKit Engine Mixer")
-        mixer.outputFormat = audioFormat
+        mixer.outputFormat = format
 		avEngine.attach(mixer.avAudioNode)
 		avEngine.connect(mixer.avAudioNode,
 						 to: avEngine.outputNode,
-						 format: audioFormat)
+						 format: format)
 
 		mainMixerNode = mixer
 	}
